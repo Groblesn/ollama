@@ -15,20 +15,21 @@ const (
 func HumanNumber(b uint64) string {
 	switch {
 	case b >= Billion:
-		number := float64(b) / Billion
-		if number == math.Floor(number) {
-			return fmt.Sprintf("%.0fB", number) // no decimals if whole number
-		}
-		return fmt.Sprintf("%.1fB", number) // one decimal if not a whole number
+		return formatScaled(float64(b)/Billion, 1, "B")
 	case b >= Million:
-		number := float64(b) / Million
-		if number == math.Floor(number) {
-			return fmt.Sprintf("%.0fM", number) // no decimals if whole number
-		}
-		return fmt.Sprintf("%.2fM", number) // two decimals if not a whole number
+		return formatScaled(float64(b)/Million, 2, "M")
 	case b >= Thousand:
 		return fmt.Sprintf("%.0fK", float64(b)/Thousand)
 	default:
 		return strconv.FormatUint(b, 10)
 	}
+}
+
+// formatScaled drops the fractional part for whole numbers and otherwise
+// keeps the given number of decimals.
+func formatScaled(value float64, decimals int, suffix string) string {
+	if value == math.Floor(value) {
+		decimals = 0
+	}
+	return fmt.Sprintf("%.*f%s", decimals, value, suffix)
 }
