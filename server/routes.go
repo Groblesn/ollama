@@ -2185,15 +2185,19 @@ func allowedHost(host string) bool {
 		return true
 	}
 
-	tlds := []string{
-		"localhost",
-		"local",
-		"internal",
+	if hasLocalTLDSuffix(host) {
+		return true
 	}
 
-	// check if the host is a local TLD
-	for _, tld := range tlds {
-		if strings.HasSuffix(host, "."+tld) {
+	return false
+}
+
+var localTLDs = []string{"localhost", "local", "internal"}
+
+// hasLocalTLDSuffix reports whether host is served from a local top-level domain.
+func hasLocalTLDSuffix(host string) bool {
+	for _, tld := range localTLDs {
+		if strings.HasSuffix(host, tld) {
 			return true
 		}
 	}
